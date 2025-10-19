@@ -1,0 +1,5 @@
+google-generativeai
+genkit
+yfinance
+flask
+cachetools
