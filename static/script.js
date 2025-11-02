@@ -1,9 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("#etf-form");
     const tableBody = document.querySelector("#etf-table tbody");
 
-    async function fetchEtfData() {
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const etfs = document.querySelector("#etfs").value;
+        const period = document.querySelector("#period").value;
+
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>`;
+
         try {
-            const response = await fetch("/api/etfs");
+            const response = await fetch(`/api/etf_harris?etfs=${etfs}&period=${period}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -13,23 +21,24 @@ document.addEventListener("DOMContentLoaded", () => {
             tableBody.innerHTML = "";
 
             // Populate table
-            for (const etf in data) {
+            data.forEach(etfData => {
                 const row = document.createElement("tr");
-                const etfData = data[etf];
 
                 row.innerHTML = `
-                    <td>${etf}</td>
-                    <td>${etfData.current_price?.toFixed(2) || 'N/A'}</td>
-                    <td>${etfData.one_month_return?.toFixed(2) || 'N/A'}%</td>
-                    <td>${etfData.two_month_return?.toFixed(2) || 'N/A'}%</td>
+                    <td>${etfData.ticker}</td>
+                    <td>${etfData.nav_return?.toFixed(2) || 'N/A'}%</td>
+                    <td>${etfData.underlying_return?.toFixed(2) || 'N/A'}%</td>
+                    <td>${etfData.distribution_return?.toFixed(2) || 'N/A'}%</td>
+                    <td>${etfData.total_return?.toFixed(2) || 'N/A'}%</td>
+                    <td>${etfData.return_of_capital_percentage}</td>
+                    <td>${etfData.harris_factor?.toFixed(2) || 'N/A'}</td>
                 `;
                 tableBody.appendChild(row);
-            }
+            });
+
         } catch (error) {
             console.error("Error fetching ETF data:", error);
-            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Error loading data. See console for details.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Error loading data. See console for details.</td></tr>`;
         }
-    }
-
-    fetchEtfData();
+    });
 });
