@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Tracker</title>
+    <title>ETF Harris Factor Calculator</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>ETF Tracker</h1>
+    <h1>ETF Harris Factor Calculator</h1>
+    <form id="etf-form">
+        <label for="etfs">ETF Tickers (comma-separated):</label>
+        <input type="text" id="etfs" name="etfs" required>
+        <label for="period">Period:</label>
+        <select id="period" name="period">
+            <option value="1">1 Month</option>
+            <option value="2">2 Months</option>
+            <option value="3">3 Months</option>
+        </select>
+        <button type="submit">Calculate</button>
+    </form>
+    <p class="disclaimer">
+        <strong>Disclaimer:</strong> The "Return of Capital %" is not available, so the Harris Factor is calculated without it. The "Underlying Return" is an approximation based on the top 10 holdings.
+    </p>
     <table id="etf-table">
         <thead>
             <tr>
                 <th>Ticker</th>
-                <th>Current Price</th>
-                <th>1-Month Total Return</th>
-                <th>2-Month Total Return</th>
+                <th>NAV Return</th>
+                <th>Underlying Return</th>
+                <th>Distribution Return</th>
+                <th>Total Return</th>
+                <th>Return of Capital %</th>
+                <th>Harris Factor</th>
             </tr>
         </thead>
         <tbody>
