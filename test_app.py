@@ -134,6 +134,35 @@ class TestEtfFunctions(unittest.TestCase):
         self.assertEqual(res3, "result_for_A")
         self.assertEqual(dummy_expensive_call.call_count[0], 2)
 
+class TestApiEndpoints(unittest.TestCase):
+
+    def setUp(self):
+        self.app = app.test_client()
+        self.app.testing = True
+
+    @patch('app.get_all_etf_data')
+    def test_etf_data_endpoint(self, mock_get_all_etf_data):
+        mock_get_all_etf_data.return_value = {"COYY": {"current_price": 100}, "TSYY": {"current_price": 200}}
+
+        response = self.app.get('/api/etfs')
+        self.assertEqual(response.status_code, 200)
+
+        data = response.get_json()
+        self.assertIn("COYY", data)
+        self.assertIn("TSYY", data)
+        self.assertIn("current_price", data["COYY"])
+
+    def test_simulate_trade_endpoint(self):
+        with patch('app.simulate_trading') as mock_simulate_trading:
+            mock_simulate_trading.return_value = 1050.0
+
+            response = self.app.get('/api/simulate_trade?etfs=aapu,aapx&initial_investment=1000&weeks=4')
+            self.assertEqual(response.status_code, 200)
+
+            data = response.get_json()
+            self.assertIn('final_value', data)
+            self.assertEqual(data['final_value'], 1050.0)
+
 
 if __name__ == '__main__':
     unittest.main()
